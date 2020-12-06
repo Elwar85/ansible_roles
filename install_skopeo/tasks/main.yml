@@ -1,0 +1,17 @@
+---
+- name: Add required signing key
+  apt_key:
+    url: "{{ repo_url }}/{{ repo_path }}/x{{ ansible_distribution }}_{{ ansible_distribution_version }}/Release.key"
+    state: present
+
+- name: Add required repository into sources list
+  apt_repository:
+    repo: "deb {{ repo_url }}/{{ repo_path }}/x{{ ansible_distribution }}_{{ ansible_distribution_version }}/ /"
+    state: present
+    filename: "{{ repo_path | replace('/','') }}"
+    mode: 0644
+
+- name: Install skopeo
+  apt:
+    name: skopeo
+    update_cache: yes
