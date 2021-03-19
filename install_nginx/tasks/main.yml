@@ -25,7 +25,7 @@
     filename: "nginx"
     mode: 0644
 
-- name: Install skopeo
+- name: Install nginx
   apt:
     name: nginx
     update_cache: yes
