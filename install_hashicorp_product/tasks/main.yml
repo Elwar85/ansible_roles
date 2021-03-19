@@ -1,18 +1,19 @@
 ---
-- name: Get {{ product }} versions information
-  uri:
-    url: "{{ releases_url }}/{{ product }}/"
-    return_content: yes
-    headers:
-      Content-Type: "text/html"
-  register: uri_data
+- block:
+   - name: Get {{ product }} versions information
+     uri:
+       url: "{{ releases_url }}/{{ product }}/"
+       return_content: yes
+       headers:
+         Content-Type: "text/html"
+     register: uri_data
 
-- name: Get version information
-  set_fact:
-    version: "{{ uri_data.content.split() | \
-      select('match', '^href=\\\"\/.*\\\/(.+)\/\\\"') | \
-      reject('search','\\+ent|-alpha|-beta|-rc|-oci') | first | \
-      regex_search('href=\\\"\/.*\\\/(.+)\/\\\"','\\1') | first }}"
+   - name: Get version information
+     set_fact:
+       version: "{{ uri_data.content.split() | \
+         select('match', '^href=\\\"\/.*\\\/(.+)\/\\\"') | \
+         reject('search','\\+ent|-alpha|-beta|-rc|-oci') | first | \
+         regex_search('href=\\\"\/.*\\\/(.+)\/\\\"','\\1') | first }}"
   when: version is not defined
 
 - name: Install {{ product }} {{ version }}
