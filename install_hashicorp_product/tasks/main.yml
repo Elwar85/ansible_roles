@@ -1,4 +1,5 @@
 ---
+<<<<<<< HEAD
 - block:
    - name: Get {{ product }} versions information
      uri:
@@ -14,6 +15,22 @@
          select('match', '^href=\\\"\/.*\\\/(.+)\/\\\"') | \
          reject('search','\\+ent|-alpha|-beta|-rc|-oci') | first | \
          regex_search('href=\\\"\/.*\\\/(.+)\/\\\"','\\1') | first }}"
+=======
+- name: Get {{ product }} versions information
+  uri:
+    url: "{{ releases_url }}/{{ product }}/"
+    return_content: yes
+    headers:
+      Content-Type: "text/html"
+  register: uri_data
+
+- name: Get version information
+  set_fact:
+    version: "{{ uri_data.content.split() | \
+      select('match', '^href=\\\"\/.*\\\/(.+)\/\\\"') | \
+      reject('search','\\+ent|-alpha|-beta|-rc|-oci') | first | \
+      regex_search('href=\\\"\/.*\\\/(.+)\/\\\"','\\1') | first }}"
+>>>>>>> b268f4e421104eb19825e44d0a7e9dbea2e6a367
   when: version is not defined
 
 - name: Install {{ product }} {{ version }}
