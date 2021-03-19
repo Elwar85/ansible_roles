@@ -1,0 +1,25 @@
+---
+- name: Get {{ product }} versions information
+  uri:
+    url: "{{ releases_url }}/{{ product }}/"
+    return_content: yes
+    headers:
+      Content-Type: "text/html"
+  register: uri_data
+
+- name: Get version information
+  set_fact:
+    version: "{{ uri_data.content.split() | \
+      select('match', '^href=\\\"\/.*\\\/(.+)\/\\\"') | \
+      reject('search','\\+ent|-alpha|-beta|-rc|-oci') | first | \
+      regex_search('href=\\\"\/.*\\\/(.+)\/\\\"','\\1') | first }}"
+  when: version is not defined
+
+- name: Install {{ product }} {{ version }}
+  unarchive:
+    src: "{{ releases_url }}/{{ product }}/{{ version }}/{{ product }}_{{ version }}_{{ arch }}.zip"
+    dest: /usr/local/bin
+    remote_src: yes
+    owner: root
+    group: root
+    mode: '0755'
